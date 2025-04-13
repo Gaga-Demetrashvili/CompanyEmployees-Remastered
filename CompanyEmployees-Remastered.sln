@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35919.96 d17.13
+VisualStudioVersion = 17.13.35919.96
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompanyEmployees-Remastered", "CompanyEmployees-Remastered\CompanyEmployees-Remastered.csproj", "{11186EE0-AFFA-4CEC-B150-73E680E04D77}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoggingService", "LoggingService\LoggingService.csproj", "{454B530F-7345-49C8-A5D3-F1E90991A339}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{11186EE0-AFFA-4CEC-B150-73E680E04D77}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11186EE0-AFFA-4CEC-B150-73E680E04D77}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{11186EE0-AFFA-4CEC-B150-73E680E04D77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{454B530F-7345-49C8-A5D3-F1E90991A339}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{454B530F-7345-49C8-A5D3-F1E90991A339}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{454B530F-7345-49C8-A5D3-F1E90991A339}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{454B530F-7345-49C8-A5D3-F1E90991A339}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

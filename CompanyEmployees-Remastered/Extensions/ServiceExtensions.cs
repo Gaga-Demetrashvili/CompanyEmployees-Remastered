@@ -1,4 +1,6 @@
-﻿namespace CompanyEmployees_Remastered.Extensions;
+﻿using LoggingService;
+
+namespace CompanyEmployees_Remastered.Extensions;
 
 public static class ServiceExtensions
 {
@@ -26,10 +28,12 @@ public static class ServiceExtensions
                     .AllowAnyHeader());
         });
 
-
     public static void ConfigureIISIntegration(this IServiceCollection services) =>
         services.Configure<IISServerOptions>(options =>
         {
 
         });
+
+    public static void ConfigureLoggerService(this IServiceCollection services) =>
+        services.AddSingleton<ILoggerManager, LoggerManager>();
 }
