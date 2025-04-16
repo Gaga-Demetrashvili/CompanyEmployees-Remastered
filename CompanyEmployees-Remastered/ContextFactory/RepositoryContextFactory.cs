@@ -9,6 +9,9 @@ namespace CompanyEmployees_Remastered.ContextFactory;
 
 //  We are using the IDesignTimeDbContextFactory<out TContext> interface that allows design-time services to discover implementations of this interface.
 //  Of course, the TContext parameter is our RepositoryContext class.
+
+// With the RepositoryContextFactory class that implements the IDesignTimeDbContextFactory interface, we registered our RepositoryContext class at design time.
+// This helps us find the RepositoryContext class in another project while executing migrations.
 public class RepositoryContextFactory : IDesignTimeDbContextFactory<RepositoryContext>
 {
     public RepositoryContext CreateDbContext(string[] args)

@@ -13,7 +13,7 @@ namespace CompanyEmployees.Infrastructure.Persistence;
 //  We are going to use it to improve our read-only query performance.
 //  When it’s set to false, we attach the AsNoTracking method to our query to inform EF Core that it doesn’t need to track changes for the required entities.
 //  This dramatically improves the speed of a query.
-public class RepositoryBase<T> : IRepositoryBase<T>
+public abstract class RepositoryBase<T> : IRepositoryBase<T>
     where T : class
 {
     protected RepositoryContext RepositoryContext;
