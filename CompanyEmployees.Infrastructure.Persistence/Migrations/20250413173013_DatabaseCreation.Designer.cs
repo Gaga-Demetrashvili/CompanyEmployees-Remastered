@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CompanyEmployees.Infrastructure.Persistence.Migrations
 {
-    [DbContext(typeof(BaseRepository))]
+    [DbContext(typeof(RepositoryContext))]
     [Migration("20250413173013_DatabaseCreation")]
     partial class DatabaseCreation
     {

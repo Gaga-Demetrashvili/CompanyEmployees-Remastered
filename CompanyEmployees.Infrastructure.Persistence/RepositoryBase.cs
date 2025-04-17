@@ -21,6 +21,9 @@ public abstract class RepositoryBase<T> : IRepositoryBase<T>
     public RepositoryBase(RepositoryContext repositoryContext) =>
         RepositoryContext = repositoryContext;
 
+    // When you have IQueryable return type in EF Core, you can use it to build a query.
+    // It does not execute a DB call immediately, represents a query definition (deferred execution).
+    // The actual database call only happens when you try to materialize the data — like with .ToList(), .First(), .Count(), etc.
     public IQueryable<T> FindAll(bool trackChanges) =>
         !trackChanges ?
             RepositoryContext.Set<T>()

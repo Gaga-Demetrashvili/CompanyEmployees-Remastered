@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CompanyEmployees.Infrastructure.Persistence.Migrations
 {
-    [DbContext(typeof(BaseRepository))]
+    [DbContext(typeof(RepositoryContext))]
     partial class RepositoryContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
