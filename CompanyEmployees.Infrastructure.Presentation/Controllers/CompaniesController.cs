@@ -40,15 +40,9 @@ public class CompaniesController : ControllerBase
     // the route for the GetAllCompanies action will be api/companies which is the route placed on top of our controller.
     public IActionResult GetAllCompanies()
     {
-        try
-        {
-            var companies = _service.CompanyService.GetAllCompanies(trackChanges: false);
+        throw new Exception("Exception");
+        var companies = _service.CompanyService.GetAllCompanies(trackChanges: false);
 
-            return Ok(companies);
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "Internal server error");
-        }
+        return Ok(companies);
     }
 }

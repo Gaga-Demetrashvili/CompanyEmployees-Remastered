@@ -1,4 +1,6 @@
+using CompanyEmployees_Remastered;
 using CompanyEmployees_Remastered.Extensions;
+using LoggingService;
 using Microsoft.AspNetCore.HttpOverrides;
 using Serilog;
 
@@ -13,6 +15,8 @@ builder.Services.ConfigureSqlContext(builder.Configuration);
 builder.Services.ConfigureRepositoryManager();
 builder.Services.ConfigureServiceManager();
 builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 
 // Without this code, our API wouldn’t work, and wouldn’t know where to route incoming requests.
 // But now, our app will find all of the controllers inside the Presentation project and configure them with the framework.
@@ -27,9 +31,11 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 
-if (app.Environment.IsDevelopment())
-    app.UseDeveloperExceptionPage();
-else
+//var logger = app.Services.GetRequiredService<ILoggerManager>();
+//app.ConfigureExceptionHandler(logger);
+app.UseExceptionHandler(opt => { });
+
+if (app.Environment.IsProduction())
     app.UseHsts();
 
 app.UseHttpsRedirection();
