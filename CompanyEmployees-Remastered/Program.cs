@@ -1,6 +1,7 @@
 using CompanyEmployees_Remastered;
 using CompanyEmployees_Remastered.Extensions;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,14 @@ builder.Services.ConfigureServiceManager();
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
+
+// To enable our custom responses. This is to override the default behavior of the [ApiController] attribute.
+// With this, we are suppressing a default model state validation
+// that is implemented due to the existence of the [ApiController] attribute in all API controllers.
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.SuppressModelStateInvalidFilter = true;
+});
 
 // Without this code, our API wouldn’t work, and wouldn’t know where to route incoming requests.
 // But now, our app will find all of the controllers inside the Presentation project and configure them with the framework.
