@@ -16,6 +16,34 @@ public class EmployeeRepository : RepositoryBase<Employee>, IEmployeeRepository
         Create(employee);
     }
 
+    // We again save our changes and call the Commit() method using the transaction object we created at the beginning of the method.
+    // Only at this point, if everything goes well inside the transaction, all the changes will be executed.
+
+    // We don’t have to explicitly call the Restore method here because EF Core will restore all the changes automatically
+    // if something goes wrong during the transaction. Again, this is why it creates those savepoints.
+    public void DeleteEmployee(Company compnay, Employee employee)
+    {
+        // I took transaction logic out in case I'll need to start it in service layer.
+        // All the database-related logic stays inside the repository classes.
+        // If I don't need to use it in service layer than I do not need to add 
+        // BeginTransaction Method for begining transaction in RepositoryManager class.
+
+        // using var tranasaction = RepositoryContext.Database.BeginTransaction();
+
+        Delete(employee);
+
+        RepositoryContext.SaveChanges();
+
+        if(!FindByCondition(e => e.CompanyId == compnay.Id, false).Any())
+        {
+            RepositoryContext.Companies!.Remove(compnay);
+
+            RepositoryContext.SaveChanges();
+        }
+
+        // tranasaction.Commit();
+    }
+
     public Employee GetEmployee(Guid companyId, Guid id, bool trackChanges) =>
         FindByCondition(e => e.CompanyId.Equals(companyId) && e.Id.Equals(id), trackChanges)
             .SingleOrDefault()!;

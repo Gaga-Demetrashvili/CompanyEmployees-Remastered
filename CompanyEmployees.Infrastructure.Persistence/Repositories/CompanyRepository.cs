@@ -13,6 +13,8 @@ internal sealed class CompanyRepository : RepositoryBase<Company>, ICompanyRepos
 
     public void CreateCompany(Company company) => Create(company);
 
+    public void DeleteCompany(Company company) => Delete(company);
+
     // ToList() Executes the query against the database immediately and brings all the results into memory as a list.
     // Once you call .ToList(), any filtering/sorting afterward is done in-memory, not in the DB.
     public IEnumerable<Company> GetAllCompanies(bool trackChanges) =>

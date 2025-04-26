@@ -5,6 +5,7 @@ using CompanyEmployees.Core.Domain.Repositories;
 using CompanyEmployees.Core.Services.Abstractions;
 using CompanyEmployees.Shared.DataTransferObjects;
 using LoggingService;
+using System.Net.WebSockets;
 
 namespace CompanyEmployees.Core.Services;
 
@@ -35,6 +36,23 @@ public class EmployeeService : IEmployeeService
         var employeeToReturn = _mapper.Map<EmployeeDto>(employeeEntity);
 
         return employeeToReturn;
+    }
+
+    public void DeleteEmployeeForCompany(Guid companyId, Guid id, bool trackChanges)
+    {
+        var company = _repository.Company.GetCompany(companyId, trackChanges);
+        if (company is null)
+            throw new CompanyNotFoundException(companyId);
+
+        var employeeForCompany = _repository.Employee.GetEmployee(companyId, id, trackChanges);
+        if (employeeForCompany is null)
+            throw new EmployeeNotFoundException(id);
+
+        using var transaction = _repository.BeginTransaction();
+
+        _repository.Employee.DeleteEmployee(company, employeeForCompany);
+
+        transaction.Commit();
     }
 
     // var company = FindByCondition(c => c.Id.Equals(companyId), trackChanges)

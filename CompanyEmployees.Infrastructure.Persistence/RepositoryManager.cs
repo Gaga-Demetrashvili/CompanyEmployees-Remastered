@@ -1,5 +1,6 @@
 ﻿using CompanyEmployees.Core.Domain.Repositories;
 using CompanyEmployees.Infrastructure.Persistence.Repositories;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace CompanyEmployees.Infrastructure.Persistence;
 
@@ -24,4 +25,6 @@ public class RepositoryManager : IRepositoryManager
     public IEmployeeRepository Employee => _employeeRepository.Value;
 
     public void Save() => _repositoryContext.SaveChanges();
+
+    public IDbContextTransaction BeginTransaction() => _repositoryContext.Database.BeginTransaction();
 }
