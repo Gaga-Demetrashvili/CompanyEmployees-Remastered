@@ -110,4 +110,20 @@ public class CompaniesController : ControllerBase
 
         return NoContent();
     }
+
+    // While updating company, we can insert child resource as well (emoloyee for that company).
+    // EF Core does that job for us because we track the company entity.
+
+    // As soon as mapping occurs, EF Core sets the state for the company entity to Modified and for all the employees to Added.
+    // After we call the Save method, the Name property will be modified and the employee entity will be created in the database.
+    [HttpPut("{id:guid}")]
+    public IActionResult UpdateCompany(Guid id, [FromBody] CompanyForUpdateDto company)
+    {
+        if (company is null)
+            return BadRequest("CompanyForUpdateDto object is null");
+
+        _service.CompanyService.UpdateCompany(id, company, trackChanges: true);
+
+        return NoContent();
+    }
 }

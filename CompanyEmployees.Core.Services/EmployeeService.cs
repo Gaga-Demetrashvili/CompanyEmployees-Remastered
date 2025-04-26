@@ -5,7 +5,6 @@ using CompanyEmployees.Core.Domain.Repositories;
 using CompanyEmployees.Core.Services.Abstractions;
 using CompanyEmployees.Shared.DataTransferObjects;
 using LoggingService;
-using System.Net.WebSockets;
 
 namespace CompanyEmployees.Core.Services;
 
@@ -92,5 +91,19 @@ public class EmployeeService : IEmployeeService
         var employeesDto = _mapper.Map<IEnumerable<EmployeeDto>>(employeesFromDb);
 
         return employeesDto;
+    }
+
+    public void UpdateEmployeeForCompany(Guid companyId, Guid id, EmployeeForUpdateDto employeeForUpdate, bool compTrackChanges, bool empTrackChanges)
+    {
+        var company = _repository.Company.GetCompany(companyId, compTrackChanges);
+        if (company is null)
+            throw new CompanyNotFoundException(companyId);
+
+        var employeeEntity = _repository.Employee.GetEmployee(companyId, id, empTrackChanges);
+        if (employeeEntity is null)
+            throw new EmployeeNotFoundException(id);
+
+        _mapper.Map(employeeForUpdate, employeeEntity);
+        _repository.Save();
     }
 }

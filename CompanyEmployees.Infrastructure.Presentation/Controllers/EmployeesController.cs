@@ -1,6 +1,7 @@
 ﻿using CompanyEmployees.Core.Services.Abstractions;
 using CompanyEmployees.Shared.DataTransferObjects;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace CompanyEmployees.Infrastructure.Presentation.Controllers;
 
@@ -47,6 +48,34 @@ public class EmployeesController : ControllerBase
     public IActionResult DeleteEmployeeForCompany(Guid companyId, Guid id)
     {
         _service.EmployeeService.DeleteEmployeeForCompany(companyId, id, trackChanges: false);
+
+        return NoContent();
+    }
+
+    // NOTE: We’ve changed only the Age property, but we have sent all the other properties with unchanged values as well.
+    // Therefore, Age is only updated in the database.
+    // But if we send the object with just the Age property, other properties will be set to their default values
+    // and the whole object will be updated — not just the Age column.
+    // That’s because the PUT is a request for a full update. This is very important to know.
+
+    // One note, though. If we use the Update method from our repository, even if we change just the Age property,
+    // all properties will be updated in the database.
+    // In my current implementation only age was updated in query:
+
+    // SET IMPLICIT_TRANSACTIONS OFF;
+    // SET NOCOUNT ON;
+    // UPDATE[Employees] SET[Age] = @p0
+    // OUTPUT 1
+    // WHERE[EmployeeId] = @p1;
+    [HttpPut("{id:guid}")]
+    public IActionResult UpdateEmployeeForCompany(Guid companyId, Guid id,
+    [FromBody] EmployeeForUpdateDto employee)
+    {
+        if (employee is null)
+            return BadRequest("EmployeeForUpdateDto object is null");
+
+        _service.EmployeeService.UpdateEmployeeForCompany(companyId, id, employee,
+            compTrackChanges: false, empTrackChanges: true);
 
         return NoContent();
     }
