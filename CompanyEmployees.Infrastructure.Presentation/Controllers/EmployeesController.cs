@@ -1,7 +1,7 @@
 ﻿using CompanyEmployees.Core.Services.Abstractions;
 using CompanyEmployees.Shared.DataTransferObjects;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 
 namespace CompanyEmployees.Infrastructure.Presentation.Controllers;
 
@@ -56,7 +56,7 @@ public class EmployeesController : ControllerBase
     // Therefore, Age is only updated in the database.
     // But if we send the object with just the Age property, other properties will be set to their default values
     // and the whole object will be updated — not just the Age column.
-    // That’s because the PUT is a request for a full update. This is very important to know.
+    // That’s because the **** PUT is a request for a full update. **** This is very important to know.
 
     // One note, though. If we use the Update method from our repository, even if we change just the Age property,
     // all properties will be updated in the database.
@@ -76,6 +76,27 @@ public class EmployeesController : ControllerBase
 
         _service.EmployeeService.UpdateEmployeeForCompany(companyId, id, employee,
             compTrackChanges: false, empTrackChanges: true);
+
+        return NoContent();
+    }
+
+    // If we want to update our resources only partially, we should use PATCH
+    // For the PATCH request’s media type, we should use application/json-patch+json.
+    // Even though application/json would be accepted in ASP.NET Core for the PATCH request,
+    // The recommendation by REST standards is to use the second one.
+    [HttpPatch("{id:guid}")]
+    public IActionResult PartiallyUpdateEmployeeForCompany(Guid companyId, Guid id,
+    [FromBody] JsonPatchDocument<EmployeeForUpdateDto> patchDoc)
+    {
+        if (patchDoc is null)
+            return BadRequest("patchDoc object sent from client is null.");
+
+        var result = _service.EmployeeService.GetEmployeeForPatch(companyId, id, compTrackChanges: false,
+            empTrackChanges: true);
+
+        patchDoc.ApplyTo(result.employeeToPatch);
+
+        _service.EmployeeService.SaveChangesForPatch(result.employeeToPatch, result.employeeEntity);
 
         return NoContent();
     }

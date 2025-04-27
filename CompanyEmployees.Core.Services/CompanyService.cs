@@ -54,8 +54,7 @@ public class CompanyService : ICompanyService
 
     public void DeleteCompany(Guid companyId, bool trackChanges)
     {
-        var company = _repository.Company.GetCompany(companyId, trackChanges);
-        if (company is null)
+        var company = _repository.Company.GetCompany(companyId, trackChanges) ?? 
             throw new CompanyNotFoundException(companyId);
 
         _repository.Company.DeleteCompany(company);
@@ -87,8 +86,7 @@ public class CompanyService : ICompanyService
 
     public CompanyDto GetCompany(Guid companyId, bool trackChanges)
     {
-        var company = _repository.Company.GetCompany(companyId, trackChanges);
-        if (company is null)
+        var company = _repository.Company.GetCompany(companyId, trackChanges) ?? 
             throw new CompanyNotFoundException(companyId);
 
         var companyDto = _mapper.Map<CompanyDto>(company);
