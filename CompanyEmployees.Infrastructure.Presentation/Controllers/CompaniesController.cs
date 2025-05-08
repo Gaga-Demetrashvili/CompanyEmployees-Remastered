@@ -37,6 +37,17 @@ namespace CompanyEmployees.Infrastructure.Presentation.Controllers;
 // But we like keeping it in our controllers because, as you could’ve seen,
 // it provides additional functionalities other than just 400 – Bad Request responses.
 
+// By default, we don’t have to use the ModelState.IsValid expression in Web API projects because,
+// as we explained in one of the previous sections, controllers are decorated with the [ApiController] attribute.
+// But, as we saw, it defaults all the model state errors to 400 – BadRequest and doesn’t allow us to
+// return our custom error messages with a different status code. So, we suppressed it in the Program class.
+
+// The response status code, when validation fails, should be 422 Unprocessable Entity.
+// It means the server understood the content type of the request and the syntax of the request entity is correct,
+// but it was unable to process validation rules applied on the entity inside the request body.
+// If we don’t suppress the model validation from the [ApiController] attribute,
+// we won’t be able to return this status code (422) since, as we said, it would default to 400.
+
 [Route("api/companies")]
 [ApiController]
 public class CompaniesController : ControllerBase
@@ -87,6 +98,11 @@ public class CompaniesController : ControllerBase
             createdCompany);
     }
 
+    // We need to validate the input body but not the output result of our controller actions.
+    // This means we will apply this validation to the POST, PUT, and PATCH requests, but not for the GET request.
+    
+    // Model validation occurs after model binding and reports errors where the data, sent from the client, doesn’t meet our validation criteria.
+    // Both model validation and data binding occur before our request reaches an action inside a controller.
     [HttpGet("collection/({ids})", Name = "CompanyCollection")]
     public IActionResult GetCompanyCollection([ModelBinder(BinderType = typeof(ArrayModelBinder))] IEnumerable<Guid> ids)
     {

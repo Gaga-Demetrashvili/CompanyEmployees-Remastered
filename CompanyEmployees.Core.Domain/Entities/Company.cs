@@ -33,6 +33,7 @@ namespace CompanyEmployees.Core.Domain.Entities;
 // So they are needed if you use EF migrations for DB creation and if you are not using fluent validation.
 public class Company
 {
+    // Those attributes serve the purpose of validating our model object while creating or updating resources in the database
     // These attributes are here only for database validation purposes
     [Column("CompanyId")]
     public Guid Id { get; set; }
