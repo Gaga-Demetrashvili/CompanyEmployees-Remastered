@@ -1,5 +1,7 @@
+using CompanyEmployees.Infrastructure.Presentation.Validators;
 using CompanyEmployees_Remastered;
 using CompanyEmployees_Remastered.Extensions;
+using FluentValidation;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
@@ -19,6 +21,8 @@ builder.Services.ConfigureServiceManager();
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
+builder.Services
+    .AddValidatorsFromAssemblyContaining(typeof(CompanyForCreationDtoValidator));
 
 // To enable our custom responses. This is to override the default behavior of the [ApiController] attribute.
 // With this, we are suppressing a default model state validation

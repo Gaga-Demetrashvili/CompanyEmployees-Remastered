@@ -1,6 +1,7 @@
 ﻿using CompanyEmployees.Core.Services.Abstractions;
 using CompanyEmployees.Infrastructure.Presentation.ModelBinders;
 using CompanyEmployees.Shared.DataTransferObjects;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CompanyEmployees.Infrastructure.Presentation.Controllers;
@@ -53,10 +54,18 @@ namespace CompanyEmployees.Infrastructure.Presentation.Controllers;
 public class CompaniesController : ControllerBase
 {
     private readonly IServiceManager _service;
+    //private readonly IValidator<CompanyForCreationDto> _postValidator;
+    //private readonly IValidator<CompanyForUpdateDto> _putValidator;
 
-    public CompaniesController(IServiceManager service)
+    public CompaniesController(
+        IServiceManager service
+        //IValidator<CompanyForCreationDto> postValidator, 
+        //IValidator<CompanyForUpdateDto> putValidator
+        )
     {
         _service = service;
+        //_postValidator = postValidator;
+        //_putValidator = putValidator;
     }
 
     // The purpose of the action methods inside the Web API controllers is not only to return results.
@@ -72,24 +81,26 @@ public class CompaniesController : ControllerBase
     public IActionResult GetAllCompanies()
     {
         var companies = _service.CompanyService.GetAllCompanies(trackChanges: false);
-
         return Ok(companies);
     }
 
-    // :guid is route constraint
     [HttpGet("{id:guid}", Name = "CompanyById")]
     public IActionResult GetCompany(Guid id)
     {
         var company = _service.CompanyService.GetCompany(id, trackChanges: false);
-
         return Ok(company);
     }
 
     [HttpPost]
-    public IActionResult CreateCompany([FromBody] CompanyForCreationDto company)
+    public IActionResult CreateCompany([FromBody] CompanyForCreationDto company,
+        [FromServices] IValidator<CompanyForCreationDto> validator)
     {
         if (company is null)
             return BadRequest("CompanyForCreationDto object is null");
+
+        var valResult = validator.Validate(company);
+        if (!valResult.IsValid)
+            return UnprocessableEntity(valResult.ToDictionary());
 
         var createdCompany = _service.CompanyService.CreateCompany(company);
 
@@ -98,16 +109,10 @@ public class CompaniesController : ControllerBase
             createdCompany);
     }
 
-    // We need to validate the input body but not the output result of our controller actions.
-    // This means we will apply this validation to the POST, PUT, and PATCH requests, but not for the GET request.
-    
-    // Model validation occurs after model binding and reports errors where the data, sent from the client, doesn’t meet our validation criteria.
-    // Both model validation and data binding occur before our request reaches an action inside a controller.
     [HttpGet("collection/({ids})", Name = "CompanyCollection")]
     public IActionResult GetCompanyCollection([ModelBinder(BinderType = typeof(ArrayModelBinder))] IEnumerable<Guid> ids)
     {
         var companies = _service.CompanyService.GetByIds(ids, trackChanges: false);
-
         return Ok(companies);
     }
 
@@ -115,7 +120,6 @@ public class CompaniesController : ControllerBase
     public IActionResult CreateCompanyCollection([FromBody] IEnumerable<CompanyForCreationDto> companyCollection)
     {
         var result = _service.CompanyService.CreateCompanyCollection(companyCollection);
-
         return CreatedAtRoute("CompanyCollection", new { result.ids }, result.companies);
     }
 
@@ -123,23 +127,21 @@ public class CompaniesController : ControllerBase
     public IActionResult DeleteCompany(Guid id)
     {
         _service.CompanyService.DeleteCompany(id, trackChanges: false);
-
         return NoContent();
     }
 
-    // While updating company, we can insert child resource as well (emoloyee for that company).
-    // EF Core does that job for us because we track the company entity.
-
-    // As soon as mapping occurs, EF Core sets the state for the company entity to Modified and for all the employees to Added.
-    // After we call the Save method, the Name property will be modified and the employee entity will be created in the database.
     [HttpPut("{id:guid}")]
-    public IActionResult UpdateCompany(Guid id, [FromBody] CompanyForUpdateDto company)
+    public IActionResult UpdateCompany(Guid id, [FromBody] CompanyForUpdateDto company,
+        [FromServices] IValidator<CompanyForUpdateDto> validator)
     {
         if (company is null)
             return BadRequest("CompanyForUpdateDto object is null");
 
-        _service.CompanyService.UpdateCompany(id, company, trackChanges: true);
+        var valResult = validator.Validate(company);
+        if (!valResult.IsValid)
+            return UnprocessableEntity(valResult.ToDictionary());
 
+        _service.CompanyService.UpdateCompany(id, company, trackChanges: true);
         return NoContent();
     }
 }
