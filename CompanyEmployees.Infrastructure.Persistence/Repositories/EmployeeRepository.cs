@@ -45,9 +45,9 @@ public class EmployeeRepository : RepositoryBase<Employee>, IEmployeeRepository
         // tranasaction.Commit();
     }
 
-    public async Task<Employee> GetEmployeeAsync(Guid companyId, Guid id, bool trackChanges) =>
+    public async Task<Employee> GetEmployeeAsync(Guid companyId, Guid id, bool trackChanges, CancellationToken ct = default) =>
         (await FindByCondition(e => e.CompanyId.Equals(companyId) && e.Id.Equals(id), trackChanges)
-            .SingleOrDefaultAsync())!;
+            .SingleOrDefaultAsync(ct))!;
 
     public async Task<IEnumerable<Employee>> GetEmployeesAsync(Guid companyId, bool trackChanges) =>
         await FindByCondition(e => e.CompanyId.Equals(companyId), trackChanges)

@@ -1,3 +1,4 @@
+using CompanyEmployees.Infrastructure.Presentation.ActionFilters;
 using CompanyEmployees.Infrastructure.Presentation.Validators;
 using CompanyEmployees_Remastered;
 using CompanyEmployees_Remastered.Extensions;
@@ -31,6 +32,8 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.SuppressModelStateInvalidFilter = true;
 });
+
+builder.Services.AddScoped<ValidationFilterAttribute>();
 
 // Without this code, our API wouldn’t work, and wouldn’t know where to route incoming requests.
 // But now, our app will find all of the controllers inside the Presentation project and configure them with the framework.
