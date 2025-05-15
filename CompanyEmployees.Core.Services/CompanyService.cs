@@ -22,19 +22,19 @@ public class CompanyService : ICompanyService
         _mapper = mapper;
     }
 
-    public CompanyDto CreateCompany(CompanyForCreationDto company)
+    public async Task<CompanyDto> CreateCompanyAsync(CompanyForCreationDto company, CancellationToken ct = default)
     {
         var companyEntity = _mapper.Map<Company>(company);
 
         _repository.Company.CreateCompany(companyEntity);
-        _repository.Save();
+        await _repository.SaveAsync(ct);
 
         var companyToReturn = _mapper.Map<CompanyDto>(companyEntity);
 
         return companyToReturn;
     }
 
-    public (IEnumerable<CompanyDto> companies, string ids) CreateCompanyCollection(IEnumerable<CompanyForCreationDto> companyCollection)
+    public async Task<(IEnumerable<CompanyDto> companies, string ids)> CreateCompanyCollectionAsync(IEnumerable<CompanyForCreationDto> companyCollection, CancellationToken ct = default)
     {
         if (companyCollection is null)
             throw new CompanyCollectionBadRequest();
@@ -44,7 +44,7 @@ public class CompanyService : ICompanyService
         foreach (var company in companyEntities)
             _repository.Company.CreateCompany(company);
 
-        _repository.Save();
+        await _repository.SaveAsync(ct);
 
         var companyCollectionToReturn = _mapper.Map<IEnumerable<CompanyDto>>(companyEntities);
         var ids = string.Join(",", companyCollectionToReturn.Select(c => c.Id));
@@ -52,30 +52,30 @@ public class CompanyService : ICompanyService
         return (companies: companyCollectionToReturn, ids);
     }
 
-    public void DeleteCompany(Guid companyId, bool trackChanges)
+    public async Task DeleteCompanyAsync(Guid companyId, bool trackChanges, CancellationToken ct = default)
     {
-        var company = _repository.Company.GetCompany(companyId, trackChanges) ?? 
+        var company = await _repository.Company.GetCompanyAsync(companyId, trackChanges) ?? 
             throw new CompanyNotFoundException(companyId);
 
         _repository.Company.DeleteCompany(company);
-        _repository.Save();
+        await _repository.SaveAsync(ct);
     }
 
-    public IEnumerable<CompanyDto> GetAllCompanies(bool trackChanges)
+    public async Task<IEnumerable<CompanyDto>> GetAllCompaniesAsync(bool trackChanges, CancellationToken ct = default)
     {
-        var companies = _repository.Company.GetAllCompanies(trackChanges);
+        var companies = await _repository.Company.GetAllCompaniesAsync(trackChanges, ct);
 
         var companiesDto = _mapper.Map<IEnumerable<CompanyDto>>(companies);
 
         return companiesDto;
     }
 
-    public IEnumerable<CompanyDto> GetByIds(IEnumerable<Guid> ids, bool trackChanges)
+    public async Task<IEnumerable<CompanyDto>> GetByIdsAsync(IEnumerable<Guid> ids, bool trackChanges, CancellationToken ct = default)
     {
         if (ids is null)
             throw new IdParametersBadRequestException();
 
-        var companyEntities = _repository.Company.GetByIds(ids, trackChanges);
+        var companyEntities = await _repository.Company.GetByIdsAsync(ids, trackChanges, ct);
         if (ids.Count() != companyEntities.Count())
             throw new CollectionByIdsBadRequestException();
 
@@ -84,9 +84,9 @@ public class CompanyService : ICompanyService
         return companiesToReturn;
     }
 
-    public CompanyDto GetCompany(Guid companyId, bool trackChanges)
+    public async Task<CompanyDto> GetCompanyAsync(Guid companyId, bool trackChanges, CancellationToken ct = default)
     {
-        var company = _repository.Company.GetCompany(companyId, trackChanges) ?? 
+        var company = await _repository.Company.GetCompanyAsync(companyId, trackChanges, ct) ?? 
             throw new CompanyNotFoundException(companyId);
 
         var companyDto = _mapper.Map<CompanyDto>(company);
@@ -94,13 +94,13 @@ public class CompanyService : ICompanyService
         return companyDto;
     }
 
-    public void UpdateCompany(Guid companyId, CompanyForUpdateDto companyForUpdate, bool trackChanges)
+    public async Task UpdateCompanyAsync(Guid companyId, CompanyForUpdateDto companyForUpdate, bool trackChanges, CancellationToken ct = default)
     {
-        var companyEntity = _repository.Company.GetCompany(companyId, trackChanges);
+        var companyEntity = await _repository.Company.GetCompanyAsync(companyId, trackChanges, ct);
         if (companyEntity is null)
             throw new CompanyNotFoundException(companyId);
 
         _mapper.Map(companyForUpdate, companyEntity);
-        _repository.Save();
+        await _repository.SaveAsync();
     }
 }

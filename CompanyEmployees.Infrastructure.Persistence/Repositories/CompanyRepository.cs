@@ -1,5 +1,6 @@
 ﻿using CompanyEmployees.Core.Domain.Entities;
 using CompanyEmployees.Core.Domain.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace CompanyEmployees.Infrastructure.Persistence.Repositories;
 
@@ -17,16 +18,16 @@ internal sealed class CompanyRepository : RepositoryBase<Company>, ICompanyRepos
 
     // ToList() Executes the query against the database immediately and brings all the results into memory as a list.
     // Once you call .ToList(), any filtering/sorting afterward is done in-memory, not in the DB.
-    public IEnumerable<Company> GetAllCompanies(bool trackChanges) =>
-        FindAll(trackChanges)
+    public async Task<IEnumerable<Company>> GetAllCompaniesAsync(bool trackChanges, CancellationToken ct = default) =>
+        await FindAll(trackChanges)
             .OrderBy(c => c.Name)
-            .ToList();
+            .ToListAsync(ct);
 
-    public IEnumerable<Company> GetByIds(IEnumerable<Guid> ids, bool trackChanges) =>
-        FindByCondition(c => ids.Contains(c.Id), trackChanges)
-        .ToList();
+    public async Task<IEnumerable<Company>> GetByIdsAsync(IEnumerable<Guid> ids, bool trackChanges, CancellationToken ct = default) =>
+        await FindByCondition(c => ids.Contains(c.Id), trackChanges)
+        .ToListAsync();
 
-    public Company GetCompany(Guid companyId, bool trackChanges) =>
-        FindByCondition(c => c.Id.Equals(companyId), trackChanges)
-        .SingleOrDefault()!;
+    public async Task<Company> GetCompanyAsync(Guid companyId, bool trackChanges, CancellationToken ct = default) =>
+       (await FindByCondition(c => c.Id.Equals(companyId), trackChanges)
+        .SingleOrDefaultAsync())!;
 }

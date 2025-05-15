@@ -1,5 +1,6 @@
 ﻿using CompanyEmployees.Core.Domain.Entities;
 using CompanyEmployees.Core.Domain.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace CompanyEmployees.Infrastructure.Persistence.Repositories;
 
@@ -34,7 +35,7 @@ public class EmployeeRepository : RepositoryBase<Employee>, IEmployeeRepository
 
         RepositoryContext.SaveChanges();
 
-        if(!FindByCondition(e => e.CompanyId == compnay.Id, false).Any())
+        if (!FindByCondition(e => e.CompanyId == compnay.Id, false).Any())
         {
             RepositoryContext.Companies!.Remove(compnay);
 
@@ -44,12 +45,12 @@ public class EmployeeRepository : RepositoryBase<Employee>, IEmployeeRepository
         // tranasaction.Commit();
     }
 
-    public Employee GetEmployee(Guid companyId, Guid id, bool trackChanges) =>
-        FindByCondition(e => e.CompanyId.Equals(companyId) && e.Id.Equals(id), trackChanges)
-            .SingleOrDefault()!;
+    public async Task<Employee> GetEmployeeAsync(Guid companyId, Guid id, bool trackChanges) =>
+        (await FindByCondition(e => e.CompanyId.Equals(companyId) && e.Id.Equals(id), trackChanges)
+            .SingleOrDefaultAsync())!;
 
-    public IEnumerable<Employee> GetEmployees(Guid companyId, bool trackChanges) =>
-        FindByCondition(e => e.CompanyId.Equals(companyId), trackChanges)
+    public async Task<IEnumerable<Employee>> GetEmployeesAsync(Guid companyId, bool trackChanges) =>
+        await FindByCondition(e => e.CompanyId.Equals(companyId), trackChanges)
             .OrderBy(e => e.Name)
-            .ToList();
+            .ToListAsync();
 }
