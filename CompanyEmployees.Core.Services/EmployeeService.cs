@@ -4,6 +4,7 @@ using CompanyEmployees.Core.Domain.Exceptions;
 using CompanyEmployees.Core.Domain.Repositories;
 using CompanyEmployees.Core.Services.Abstractions;
 using CompanyEmployees.Shared.DataTransferObjects;
+using CompanyEmployees.Shared.RequestFeatures;
 using LoggingService;
 
 namespace CompanyEmployees.Core.Services;
@@ -82,14 +83,15 @@ public class EmployeeService : IEmployeeService
         return (employeeToPatch, employeeEntity);
     }
 
-    public async Task<IEnumerable<EmployeeDto>> GetEmployeesAsync(Guid companyId, bool trackChanges, CancellationToken ct = default)
+    public async Task<(IEnumerable<EmployeeDto> employees, MetaData metaData)> GetEmployeesAsync(Guid companyId, EmployeeParameters employeeParameters, bool trackChanges, CancellationToken ct = default)
     {
         await CheckIfCompanyExists(companyId, trackChanges, ct);
 
-        var employeesFromDb = await _repository.Employee.GetEmployeesAsync(companyId, trackChanges);
-        var employeesDto = _mapper.Map<IEnumerable<EmployeeDto>>(employeesFromDb);
+        var employeesWithMetaData = await _repository.Employee.GetEmployeesAsync(companyId, employeeParameters, trackChanges, ct);
 
-        return employeesDto;
+        var employeesDto = _mapper.Map<IEnumerable<EmployeeDto>>(employeesWithMetaData);
+
+        return (employees: employeesDto, metaData: employeesWithMetaData.MetaData);
     }
 
     public async Task SaveChangesForPatchAsync(EmployeeForUpdateDto employeeToPatch, Employee employeeEntity)

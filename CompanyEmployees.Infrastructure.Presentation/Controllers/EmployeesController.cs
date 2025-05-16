@@ -1,8 +1,10 @@
 ﻿using CompanyEmployees.Core.Services.Abstractions;
 using CompanyEmployees.Infrastructure.Presentation.ActionFilters;
 using CompanyEmployees.Shared.DataTransferObjects;
+using CompanyEmployees.Shared.RequestFeatures;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace CompanyEmployees.Infrastructure.Presentation.Controllers;
 
@@ -17,11 +19,14 @@ public class EmployeesController : ControllerBase
     // we have the companyId parameter in our action and this parameter will be mapped from the main route.
     // For that, we didn’t place it in the [HttpGet] attribute as we did with the GetCompany action.
     [HttpGet]
-    public async Task<IActionResult> GetEmployeesForCompany(Guid companyId)
+    public async Task<IActionResult> GetEmployeesForCompany(Guid companyId,
+        [FromQuery] EmployeeParameters employeeParameters, CancellationToken ct)
     {
-        var employees = await _service.EmployeeService.GetEmployeesAsync(companyId, trackChanges: false);
+        var pagedResult = await _service.EmployeeService.GetEmployeesAsync(companyId, employeeParameters, trackChanges: false, ct);
 
-        return Ok(employees);
+        Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagedResult.metaData));
+
+        return Ok(pagedResult.employees);
     }
 
     [HttpGet("{id:guid}", Name = "GetEmployeeForCompany")]
