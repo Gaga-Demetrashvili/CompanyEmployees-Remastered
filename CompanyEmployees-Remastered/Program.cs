@@ -1,5 +1,8 @@
+using CompanyEmployees.Core.Services.Abstractions;
+using CompanyEmployees.Core.Services.DataShaping;
 using CompanyEmployees.Infrastructure.Presentation.ActionFilters;
 using CompanyEmployees.Infrastructure.Presentation.Validators;
+using CompanyEmployees.Shared.DataTransferObjects;
 using CompanyEmployees_Remastered;
 using CompanyEmployees_Remastered.Extensions;
 using FluentValidation;
@@ -24,6 +27,7 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 builder.Services
     .AddValidatorsFromAssemblyContaining(typeof(CompanyForCreationDtoValidator));
+builder.Services.AddScoped<IDataShaper<EmployeeDto>, DataShaper<EmployeeDto>>();
 
 // To enable our custom responses. This is to override the default behavior of the [ApiController] attribute.
 // With this, we are suppressing a default model state validation
