@@ -57,7 +57,7 @@ public class EmployeeRepository : RepositoryBase<Employee>, IEmployeeRepository
         var employeesQuery = FindByCondition(e => e.CompanyId.Equals(companyId), trackChanges)
             .FilterEmployees(employeeParameters.MinAge, employeeParameters.MaxAge)
             .Search(employeeParameters.SearchTerm)
-            .OrderBy(e => e.Name);
+            .Sort(employeeParameters.OrderBy!);
 
         var count = await employeesQuery.CountAsync(ct);
 
