@@ -1,4 +1,5 @@
-﻿using CompanyEmployees.Core.Services.Abstractions;
+﻿using CompanyEmployees.Core.Domain.LinkModels;
+using CompanyEmployees.Core.Services.Abstractions;
 using CompanyEmployees.Infrastructure.Presentation.ActionFilters;
 using CompanyEmployees.Shared.DataTransferObjects;
 using CompanyEmployees.Shared.RequestFeatures;
@@ -14,19 +15,23 @@ public class EmployeesController : ControllerBase
 {
     private readonly IServiceManager _service;
 
-	public EmployeesController(IServiceManager service) => _service = service;
+    public EmployeesController(IServiceManager service) => _service = service;
 
     // we have the companyId parameter in our action and this parameter will be mapped from the main route.
     // For that, we didn’t place it in the [HttpGet] attribute as we did with the GetCompany action.
     [HttpGet]
+    [ServiceFilter(typeof(ValidateMediaTypeAttribute))]
     public async Task<IActionResult> GetEmployeesForCompany(Guid companyId,
         [FromQuery] EmployeeParameters employeeParameters, CancellationToken ct)
     {
-        var pagedResult = await _service.EmployeeService.GetEmployeesAsync(companyId, employeeParameters, trackChanges: false, ct);
+        var linkParams = new LinkParameters(employeeParameters, HttpContext);
 
-        Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagedResult.metaData));
+        var result = await _service.EmployeeService.GetEmployeesAsync(companyId, linkParams, trackChanges: false, ct);
 
-        return Ok(pagedResult.employees);
+        Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(result.metaData));
+
+        return result.linkResponse.HasLinks ? Ok(result.linkResponse.LinkedEntities) :
+            Ok(result.linkResponse.ShapedEntities);
     }
 
     [HttpGet("{id:guid}", Name = "GetEmployeeForCompany")]

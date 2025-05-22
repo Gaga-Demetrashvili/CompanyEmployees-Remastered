@@ -1,5 +1,6 @@
 using CompanyEmployees.Core.Services.Abstractions;
 using CompanyEmployees.Core.Services.DataShaping;
+using CompanyEmployees.Core.Services.Hateoas;
 using CompanyEmployees.Infrastructure.Presentation.ActionFilters;
 using CompanyEmployees.Infrastructure.Presentation.Validators;
 using CompanyEmployees.Shared.DataTransferObjects;
@@ -28,6 +29,7 @@ builder.Services.AddProblemDetails();
 builder.Services
     .AddValidatorsFromAssemblyContaining(typeof(CompanyForCreationDtoValidator));
 builder.Services.AddScoped<IDataShaper<EmployeeDto>, DataShaper<EmployeeDto>>();
+builder.Services.AddScoped<IEmployeeLinks, EmployeeLinks>();
 
 // To enable our custom responses. This is to override the default behavior of the [ApiController] attribute.
 // With this, we are suppressing a default model state validation
@@ -38,6 +40,7 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 });
 
 builder.Services.AddScoped<ValidationFilterAttribute>();
+builder.Services.AddScoped<ValidateMediaTypeAttribute>();
 
 // Without this code, our API wouldn’t work, and wouldn’t know where to route incoming requests.
 // But now, our app will find all of the controllers inside the Presentation project and configure them with the framework.
@@ -50,6 +53,8 @@ builder.Services.AddControllers(config =>
 }).AddXmlDataContractSerializerFormatters()
 .AddCustomCSVFormatter()
 .AddApplicationPart(typeof(CompanyEmployees.Infrastructure.Presentation.AssemblyReference).Assembly);
+
+builder.Services.AddCustomMediaTypes();
 
 builder.Host.UseSerilog((hostContext, configuration) =>
     configuration.ReadFrom.Configuration(hostContext.Configuration));

@@ -1,4 +1,5 @@
 ﻿using CompanyEmployees.Core.Domain.Entities;
+using CompanyEmployees.Core.Domain.LinkModels;
 using CompanyEmployees.Shared.DataTransferObjects;
 using CompanyEmployees.Shared.RequestFeatures;
 using System.Dynamic;
@@ -7,7 +8,7 @@ namespace CompanyEmployees.Core.Services.Abstractions;
 
 public interface IEmployeeService
 {
-    Task<(IEnumerable<ExpandoObject> employees, MetaData metaData)> GetEmployeesAsync(Guid companyId, EmployeeParameters employeeParameters, bool trackChanges, CancellationToken ct = default);
+    Task<(LinkResponse linkResponse, MetaData metaData)> GetEmployeesAsync(Guid companyId, LinkParameters linkParameters, bool trackChanges, CancellationToken ct = default);
     Task<EmployeeDto> GetEmployeeAsync(Guid companyId, Guid id, bool trackChanges, CancellationToken ct = default);
     Task<EmployeeDto> CreateEmployeeForCompanyAsync(Guid companyId, EmployeeForCreationDto employeeForCreation,
         bool trackChanges, CancellationToken ct = default);
