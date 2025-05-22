@@ -20,6 +20,7 @@ public class EmployeesController : ControllerBase
     // we have the companyId parameter in our action and this parameter will be mapped from the main route.
     // For that, we didn’t place it in the [HttpGet] attribute as we did with the GetCompany action.
     [HttpGet]
+    [HttpHead]
     [ServiceFilter(typeof(ValidateMediaTypeAttribute))]
     public async Task<IActionResult> GetEmployeesForCompany(Guid companyId,
         [FromQuery] EmployeeParameters employeeParameters, CancellationToken ct)
