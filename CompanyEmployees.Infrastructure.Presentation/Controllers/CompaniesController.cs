@@ -72,7 +72,7 @@ public class CompaniesController : ControllerBase
     // The purpose of the action methods inside the Web API controllers is not only to return results.
     // It is the main purpose, but not the only one. We need to pay attention to the status codes of our Web API responses as well.
     // Additionally, we will decorate our actions with the HTTP attributes which will specify the type of the HTTP request to that action.
-    [HttpGet]
+    [HttpGet(Name = "GetCompanies")]
     // The IActionResult interface supports using a variety of methods, which return not only the result but also the status codes.
     // In this situation, the OK method returns all the companies and also the status code 200 — which stands for OK.
     // If an exception occurs, we are going to return the internal server error with the status code 500.
@@ -94,7 +94,7 @@ public class CompaniesController : ControllerBase
         return Ok(company);
     }
 
-    [HttpPost]
+    [HttpPost(Name = "CreateCompany")]
     public async Task<IActionResult> CreateCompany([FromBody] CompanyForCreationDto company,
         [FromServices] IValidator<CompanyForCreationDto> validator, CancellationToken ct)
     {
