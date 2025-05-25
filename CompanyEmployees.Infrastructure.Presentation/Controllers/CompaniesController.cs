@@ -1,9 +1,9 @@
-﻿using CompanyEmployees.Core.Services.Abstractions;
+﻿using Asp.Versioning;
+using CompanyEmployees.Core.Services.Abstractions;
 using CompanyEmployees.Infrastructure.Presentation.ModelBinders;
 using CompanyEmployees.Shared.DataTransferObjects;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading;
 
 namespace CompanyEmployees.Infrastructure.Presentation.Controllers;
 
@@ -50,6 +50,7 @@ namespace CompanyEmployees.Infrastructure.Presentation.Controllers;
 // If we don’t suppress the model validation from the [ApiController] attribute,
 // we won’t be able to return this status code (422) since, as we said, it would default to 400.
 
+//[ApiVersion("1.0")]
 [Route("api/companies")]
 [ApiController]
 public class CompaniesController : ControllerBase
@@ -79,7 +80,7 @@ public class CompaniesController : ControllerBase
 
     // Because there is no route attribute right above the action,
     // the route for the GetAllCompanies action will be api/companies which is the route placed on top of our controller.
-    public async Task<IActionResult> GetAllCompanies(CancellationToken ct)
+    public async Task<IActionResult> GetCompanies(CancellationToken ct)
     {
         var companies = await _service.CompanyService.GetAllCompaniesAsync(trackChanges: false, ct);
 
