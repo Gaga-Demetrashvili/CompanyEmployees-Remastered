@@ -1,9 +1,9 @@
-﻿using Asp.Versioning;
-using CompanyEmployees.Core.Services.Abstractions;
+﻿using CompanyEmployees.Core.Services.Abstractions;
 using CompanyEmployees.Infrastructure.Presentation.ModelBinders;
 using CompanyEmployees.Shared.DataTransferObjects;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace CompanyEmployees.Infrastructure.Presentation.Controllers;
 
@@ -53,6 +53,8 @@ namespace CompanyEmployees.Infrastructure.Presentation.Controllers;
 //[ApiVersion("1.0")]
 [Route("api/companies")]
 [ApiController]
+[OutputCache(PolicyName = "120SecondsDuration")]
+//[ResponseCache(CacheProfileName = "120SecondsDuration")]
 public class CompaniesController : ControllerBase
 {
     private readonly IServiceManager _service;
@@ -88,9 +90,14 @@ public class CompaniesController : ControllerBase
     }
 
     [HttpGet("{id:guid}", Name = "CompanyById")]
+    //[ResponseCache(Duration = 60)] // Caches the response for 60 seconds
+    [OutputCache(Duration = 60)]
     public async Task<IActionResult> GetCompany(Guid id, CancellationToken ct)
     {
         var company = await _service.CompanyService.GetCompanyAsync(id, trackChanges: false, ct);
+
+        var etag = $"\"{Guid.NewGuid():n}\"";
+        HttpContext.Response.Headers.ETag = etag;
 
         return Ok(company);
     }
