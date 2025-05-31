@@ -33,6 +33,7 @@ builder.Services.AddScoped<IEmployeeLinks, EmployeeLinks>();
 builder.Services.ConfigureVersioning();
 //builder.Services.ConfigureResponseCaching();
 builder.Services.ConfigureOutputCaching();
+builder.Services.ConfigureRateLimitingOptions();
 
 // To enable our custom responses. This is to override the default behavior of the [ApiController] attribute.
 // With this, we are suppressing a default model state validation
@@ -88,6 +89,7 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
     ForwardedHeaders = ForwardedHeaders.All
 });
 
+app.UseRateLimiter();
 app.UseCors("CorsPolicy");
 //app.UseResponseCaching();
 app.UseOutputCache();
