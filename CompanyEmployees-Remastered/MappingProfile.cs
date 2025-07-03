@@ -30,5 +30,7 @@ public class MappingProfile : Profile
         CreateMap<CompanyForUpdateDto, Company>(); 
         
         CreateMap<EmployeeForUpdateDto, Employee>().ReverseMap();
+
+        CreateMap<UserForRegistrationDto, User>();
     }
 }
