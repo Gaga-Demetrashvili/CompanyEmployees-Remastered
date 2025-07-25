@@ -36,6 +36,7 @@ builder.Services.ConfigureOutputCaching();
 builder.Services.ConfigureRateLimitingOptions();
 builder.Services.AddAuthentication();
 builder.Services.ConfigureIdentity();
+builder.Services.ConfigureJWT(builder.Configuration);
 
 // To enable our custom responses. This is to override the default behavior of the [ApiController] attribute.
 // With this, we are suppressing a default model state validation

@@ -2,6 +2,7 @@
 using CompanyEmployees.Infrastructure.Presentation.ModelBinders;
 using CompanyEmployees.Shared.DataTransferObjects;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.AspNetCore.RateLimiting;
@@ -78,6 +79,7 @@ public class CompaniesController : ControllerBase
     // Additionally, we will decorate our actions with the HTTP attributes which will specify the type of the HTTP request to that action.
     [HttpGet(Name = "GetCompanies")]
     [EnableRateLimiting("SpecificPolicy")]
+    [Authorize(Roles = "Manager")]
     // The IActionResult interface supports using a variety of methods, which return not only the result but also the status codes.
     // In this situation, the OK method returns all the companies and also the status code 200 — which stands for OK.
     // If an exception occurs, we are going to return the internal server error with the status code 500.
