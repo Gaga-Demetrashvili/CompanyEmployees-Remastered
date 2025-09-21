@@ -183,7 +183,7 @@ public static class ServiceExtensions
     public static void ConfigureJWT(this IServiceCollection services, IConfiguration configuration)
     {
         var jwtConfiguration = new JwtConfiguration();
-        configuration.Bind(jwtConfiguration.Section, jwtConfiguration);
+        configuration.Bind(JwtConfiguration.Section, jwtConfiguration);
 
         var securityKey = Environment.GetEnvironmentVariable("SECRET");
 
@@ -207,4 +207,7 @@ public static class ServiceExtensions
             };
         });
     }
+
+    public static void AddJwtConfiguration(this IServiceCollection services, IConfiguration configuration) =>
+        services.Configure<JwtConfiguration>(configuration.GetSection(JwtConfiguration.Section));
 }
