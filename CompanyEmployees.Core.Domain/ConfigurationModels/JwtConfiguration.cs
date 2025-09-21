@@ -2,7 +2,7 @@
 
 public class JwtConfiguration
 {
-    public static string Section { get; set; } = "JwtSettings";
+    public const string JwtSectionName = "JwtSettings";
     public string? ValidIssuer { get; set; }
     public string? ValidAudience { get; set; }
     public string? Expires { get; set; }
