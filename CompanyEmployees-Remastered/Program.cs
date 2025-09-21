@@ -38,6 +38,7 @@ builder.Services.AddAuthentication();
 builder.Services.ConfigureIdentity();
 builder.Services.ConfigureJWT(builder.Configuration);
 builder.Services.AddJwtConfiguration(builder.Configuration);
+builder.Services.ConfigureHealthChecks(builder.Configuration);
 
 // To enable our custom responses. This is to override the default behavior of the [ApiController] attribute.
 // With this, we are suppressing a default model state validation
@@ -87,6 +88,7 @@ if (app.Environment.IsProduction())
     app.UseHsts();
 
 app.UseHttpsRedirection();
+app.ConfigureHealthChecksEndpoints();
 app.UseStaticFiles();
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {

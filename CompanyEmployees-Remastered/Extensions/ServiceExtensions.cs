@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using CompanyEmployees.Core.Domain.ConfigurationModels;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using HealthChecks.UI.Client;
 
 namespace CompanyEmployees_Remastered.Extensions;
 
@@ -210,4 +212,30 @@ public static class ServiceExtensions
 
     public static void AddJwtConfiguration(this IServiceCollection services, IConfiguration configuration) =>
         services.Configure<JwtConfiguration>(configuration.GetSection(JwtConfiguration.JwtSectionName));
+
+    public static void ConfigureHealthChecks(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddHealthChecks()
+            .AddSqlServer(configuration.GetConnectionString("sqlConnection")!, name: "Sql Health", tags: ["database"])
+            .AddCheck<CustomHealthCheck>("CustomHealthCheck", tags: ["custom"]);
+
+        services.AddHealthChecksUI()
+            .AddInMemoryStorage();
+    }
+
+    public static void ConfigureHealthChecksEndpoints(this WebApplication app)
+    {
+        app.MapHealthChecks("/health", new HealthCheckOptions
+        {
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+        });
+
+        app.MapHealthChecks("/health/custom", new HealthCheckOptions
+        {
+            Predicate = reg => reg.Tags.Contains("custom"),
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+        });
+
+        app.MapHealthChecksUI();
+    }
 }
