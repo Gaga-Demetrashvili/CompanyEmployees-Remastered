@@ -17,7 +17,7 @@ public class ServiceManager : IServiceManager
     private readonly Lazy<IAuthenticationService> _authenticationService;
 
     public ServiceManager(IRepositoryManager repository, ILoggerManager logger, IMapper mapper,
-        IEmployeeLinks employeeLinks, UserManager<User> userManager, IOptions<JwtConfiguration> configuration)
+        IEmployeeLinks employeeLinks, UserManager<User> userManager, IOptionsMonitor<JwtConfiguration> configuration)
     {
         _companyService = new Lazy<ICompanyService>(() => new CompanyService(repository, logger, mapper));
         _employeeService = new Lazy<IEmployeeService>(() => new EmployeeService(repository, logger, mapper, employeeLinks));

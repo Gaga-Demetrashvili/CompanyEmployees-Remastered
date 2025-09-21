@@ -25,12 +25,12 @@ internal sealed class AuthenticationService : IAuthenticationService
     private User? _user;
 
     public AuthenticationService(ILoggerManager logger, IMapper mapper,
-        UserManager<User> userManager, IOptions<JwtConfiguration> configuration)
+        UserManager<User> userManager, IOptionsMonitor<JwtConfiguration> configuration)
     {
         _logger = logger;
         _mapper = mapper;
         _userManager = userManager;
-        _jwtConfiguration = configuration.Value;
+        _jwtConfiguration = configuration.CurrentValue;
     }
 
     public async Task<bool> ValidateUser(UserForAuthenticationDto userForAuth)
