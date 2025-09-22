@@ -56,6 +56,7 @@ namespace CompanyEmployees.Infrastructure.Presentation.Controllers;
 [Route("api/companies")]
 [ApiController]
 [OutputCache(PolicyName = "120SecondsDuration")]
+[ApiExplorerSettings(GroupName = "v1")]
 //[ResponseCache(CacheProfileName = "120SecondsDuration")]
 public class CompaniesController : ControllerBase
 {
@@ -77,6 +78,11 @@ public class CompaniesController : ControllerBase
     // The purpose of the action methods inside the Web API controllers is not only to return results.
     // It is the main purpose, but not the only one. We need to pay attention to the status codes of our Web API responses as well.
     // Additionally, we will decorate our actions with the HTTP attributes which will specify the type of the HTTP request to that action.
+
+    /// <summary>
+    /// Gets the list of all companies
+    /// </summary>
+    /// <returns>The companies list</returns>
     [HttpGet(Name = "GetCompanies")]
     [EnableRateLimiting("SpecificPolicy")]
     [Authorize(Roles = "Manager")]
@@ -107,7 +113,18 @@ public class CompaniesController : ControllerBase
         return Ok(company);
     }
 
+    /// <summary>
+    /// Creates a newly created company
+    /// </summary>
+    /// <param name="company"></param>
+    /// <returns>A newly created company</returns>
+    /// <response code="201">Returns the newly created item</response>
+    /// <response code="400">If the item is null</response>
+    /// <response code="422">If the model is invalid</response>
     [HttpPost(Name = "CreateCompany")]
+    [ProducesResponseType(201)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(422)]
     public async Task<IActionResult> CreateCompany([FromBody] CompanyForCreationDto company,
         [FromServices] IValidator<CompanyForCreationDto> validator, CancellationToken ct)
     {
